@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KILL — Developer</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    background:#030303;
+    color:#fff;
+    font-family:"Cairo",sans-serif;
+    overflow-x:hidden;
+}
+
+::selection{
+    background:#fff;
+    color:#000;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+button{
+    font-family:inherit;
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background{
+    position:fixed;
+    inset:0;
+    z-index:-20;
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(255,255,255,.055),
+            transparent 28%
+        ),
+        #030303;
+}
+
+.background::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(
+            rgba(255,255,255,.018) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.018) 1px,
+            transparent 1px
+        );
+    background-size:80px 80px;
+    mask-image:linear-gradient(
+        to bottom,
+        transparent,
+        #000 20%,
+        #000 75%,
+        transparent
+    );
+}
+
+.ambient{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    filter:blur(90px);
+    opacity:.16;
+}
+
+.ambient.one{
+    width:500px;
+    height:500px;
+    background:#fff;
+    top:-250px;
+    left:-180px;
+    animation:ambientOne 12s ease-in-out infinite;
+}
+
+.ambient.two{
+    width:600px;
+    height:600px;
+    background:#777;
+    right:-300px;
+    top:30%;
+    animation:ambientTwo 15s ease-in-out infinite;
+}
+
+.ambient.three{
+    width:400px;
+    height:400px;
+    background:#aaa;
+    left:20%;
+    bottom:-250px;
+    opacity:.07;
+    animation:ambientThree 13s ease-in-out infinite;
+}
+
+@keyframes ambientOne{
+    0%,100%{
+        transform:translate(0,0);
+    }
+    50%{
+        transform:translate(160px,100px);
+    }
+}
+
+@keyframes ambientTwo{
+    0%,100%{
+        transform:translate(0,0);
+    }
+    50%{
+        transform:translate(-120px,-100px);
+    }
+}
+
+@keyframes ambientThree{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.4);
+    }
+}
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+#particles{
+    position:fixed;
+    inset:0;
+    z-index:-5;
+    pointer-events:none;
+}
+
+/* =========================================================
+   NOISE
+========================================================= */
+
+.noise{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9998;
+    opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* =========================================================
+   CURSOR
+========================================================= */
+
+.cursor{
+    position:fixed;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#fff;
+    pointer-events:none;
+    z-index:99999;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 20px rgba(255,255,255,.8);
+    transition:
+        width .25s ease,
+        height .25s ease,
+        background .25s ease;
+}
+
+.cursor-ring{
+    position:fixed;
+    width:38px;
+    height:38px;
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:99998;
+    transform:translate(-50%,-50%);
+    transition:
+        width .3s ease,
+        height .3s ease,
+        border-color .3s ease;
+}
+
+.cursor.big{
+    width:18px;
+    height:18px;
+    background:#fff;
+}
+
+.cursor-ring.big{
+    width:62px;
+    height:62px;
+    border-color:rgba(255,255,255,.65);
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.nav{
+    position:fixed;
+    top:22px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(1180px,calc(100% - 32px));
+    height:68px;
+    z-index:1000;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 22px;
+
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:22px;
+
+    background:rgba(5,5,5,.58);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.55),
+        inset 0 1px rgba(255,255,255,.045);
+
+    transition:.35s ease;
+}
+
+.nav:hover{
+    border-color:rgba(255,255,255,.14);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-mark{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff,
+            #777 55%,
+            #111
+        );
+
+    color:#000;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:14px;
+    font-weight:700;
+
+    box-shadow:
+        0 8px 30px rgba(255,255,255,.08);
+}
+
+.brand-name{
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:700;
+    letter-spacing:2px;
+}
+
+.nav-links{
+    display:flex;
+    gap:34px;
+}
+
+.nav-links a{
+    position:relative;
+    color:#777;
+    font-size:12px;
+    transition:.3s;
+}
+
+.nav-links a::after{
+    content:"";
+    position:absolute;
+    right:0;
+    bottom:-7px;
+    width:0;
+    height:1px;
+    background:#fff;
+    transition:.3s;
+}
+
+.nav-links a:hover{
+    color:#fff;
+}
+
+.nav-links a:hover::after{
+    width:100%;
+}
+
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#666;
+    font-size:10px;
+}
+
+.live-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 0 12px #fff;
+    animation:live 2s infinite;
+}
+
+@keyframes live{
+    0%,100%{
+        opacity:1;
+    }
+    50%{
+        opacity:.25;
+    }
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:150px 20px 100px;
+    overflow:hidden;
+}
+
+.hero-content{
+    position:relative;
+    width:min(1200px,100%);
+    text-align:center;
+    transform-style:preserve-3d;
+}
+
+.hero-top{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+
+    padding:8px 15px;
+
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:100px;
+
+    background:rgba(255,255,255,.025);
+
+    color:#888;
+    font-size:10px;
+    letter-spacing:2px;
+
+    box-shadow:
+        0 15px 50px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.04);
+
+    animation:heroTop 1s ease forwards;
+}
+
+.hero-top span{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 0 12px #fff;
+}
+
+@keyframes heroTop{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.hero-name{
+    position:relative;
+    margin-top:32px;
+
+    font-family:"Space Grotesk","Cairo",sans-serif;
+    font-size:clamp(85px,17vw,220px);
+    line-height:.78;
+    font-weight:700;
+    letter-spacing:-12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fff 0%,
+            #fff 28%,
+            #aaa 58%,
+            #303030 100%
+        );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+
+    filter:
+        drop-shadow(0 25px 60px rgba(255,255,255,.07));
+
+    animation:heroName 1.2s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+.hero-name::after{
+    content:"KILL";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,255,255,.35) 50%,
+            transparent 100%
+        );
+
+    background-size:30% 100%;
+    background-repeat:no-repeat;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+
+    color:transparent;
+
+    animation:shine 5s linear infinite;
+}
+
+@keyframes heroName{
+    from{
+        opacity:0;
+        transform:
+            translateY(50px)
+            scale(.9);
+        filter:blur(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:
+            translateY(0)
+            scale(1);
+        filter:blur(0);
+    }
+}
+
+@keyframes shine{
+    from{
+        background-position:-100% 0;
+    }
+    to{
+        background-position:400% 0;
+    }
+}
+
+.hero-role{
+    margin-top:30px;
+
+    font-family:"Space Grotesk",sans-serif;
+
+    color:#777;
+    font-size:clamp(11px,2vw,16px);
+    letter-spacing:8px;
+    text-transform:uppercase;
+}
+
+.hero-role strong{
+    color:#fff;
+    font-weight:500;
+}
+
+.hero-description{
+    width:min(620px,100%);
+    margin:28px auto 0;
+
+    color:#666;
+    font-size:13px;
+    line-height:2.1;
+}
+
+.hero-buttons{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+
+    margin-top:36px;
+}
+
+.button{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+
+    min-width:150px;
+    height:50px;
+
+    padding:0 24px;
+
+    border-radius:14px;
+
+    font-size:12px;
+    font-weight:700;
+
+    transition:
+        transform .35s,
+        border-color .35s,
+        background .35s,
+        box-shadow .35s;
+
+    overflow:hidden;
+}
+
+.button.primary{
+    background:#fff;
+    color:#000;
+}
+
+.button.primary:hover{
+    transform:translateY(-5px);
+    box-shadow:0 20px 50px rgba(255,255,255,.13);
+}
+
+.button.secondary{
+    border:1px solid rgba(255,255,255,.1);
+    background:rgba(255,255,255,.025);
+    color:#fff;
+}
+
+.button.secondary:hover{
+    transform:translateY(-5px);
+    background:rgba(255,255,255,.07);
+    border-color:rgba(255,255,255,.2);
+}
+
+.scroll-indicator{
+    position:absolute;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+
+    color:#444;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:8px;
+    letter-spacing:3px;
+}
+
+.scroll-line{
+    width:1px;
+    height:45px;
+    background:linear-gradient(
+        #555,
+        transparent
+    );
+    animation:scrollLine 2s infinite;
+}
+
+@keyframes scrollLine{
+    0%,100%{
+        opacity:.3;
+        transform:scaleY(.5);
+        transform-origin:top;
+    }
+    50%{
+        opacity:1;
+        transform:scaleY(1);
+    }
+}
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.section{
+    width:min(1180px,calc(100% - 32px));
+    margin:auto;
+    padding:130px 0;
+}
+
+.section-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:30px;
+
+    margin-bottom:55px;
+}
+
+.section-label{
+    color:#555;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:10px;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    margin-bottom:13px;
+}
+
+.section-title{
+    font-size:clamp(38px,6vw,72px);
+    line-height:.95;
+    font-weight:900;
+}
+
+.section-subtitle{
+    max-width:360px;
+    color:#555;
+    font-size:12px;
+    line-height:2;
+}
+
+/* =========================================================
+   ABOUT
+========================================================= */
+
+.about-layout{
+    display:grid;
+    grid-template-columns:1.25fr .75fr;
+    gap:18px;
+}
+
+.card{
+    position:relative;
+    border:1px solid rgba(255,255,255,.075);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.008)
+        );
+    border-radius:28px;
+
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.45),
+        inset 0 1px rgba(255,255,255,.035);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    overflow:hidden;
+
+    transform-style:preserve-3d;
+
+    transition:
+        transform .35s ease,
+        border-color .35s ease;
+}
+
+.card:hover{
+    border-color:rgba(255,255,255,.14);
+}
+
+.about-main{
+    min-height:430px;
+    padding:42px;
+}
+
+.about-main::before{
+    content:"";
+    position:absolute;
+    width:350px;
+    height:350px;
+    top:-180px;
+    left:-160px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.1),
+            transparent 70%
+        );
+}
+
+.about-number{
+    position:absolute;
+    left:32px;
+    top:30px;
+
+    font-family:"Space Grotesk",sans-serif;
+    color:#292929;
+    font-size:60px;
+    font-weight:700;
+}
+
+.about-main h3{
+    position:relative;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:38px;
+    margin-bottom:25px;
+}
+
+.about-main p{
+    position:relative;
+    max-width:700px;
+
+    color:#777;
+    font-size:14px;
+    line-height:2.15;
+}
+
+.about-main p strong{
+    color:#ddd;
+    font-weight:600;
+}
+
+.about-bottom{
+    position:absolute;
+    right:42px;
+    bottom:38px;
+    left:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding-top:22px;
+
+    border-top:1px solid rgba(255,255,255,.07);
+}
+
+.about-bottom span{
+    color:#444;
+    font-size:10px;
+}
+
+.about-bottom strong{
+    color:#aaa;
+    font-family:"Space Grotesk",sans-serif;
+    letter-spacing:1px;
+}
+
+.about-side{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.profile-card{
+    min-height:205px;
+    padding:30px;
+}
+
+.profile-top{
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.profile-avatar{
+    width:62px;
+    height:62px;
+
+    border-radius:19px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff,
+            #555 60%,
+            #111
+        );
+
+    color:#000;
+
+    font-family:"Space Grotesk",sans-serif;
+    font-size:18px;
+    font-weight:700;
+
+    box-shadow:
+        0 15px 40px rgba(255,255,255,.08);
+}
+
+.profile-name{
+    font-family:"Space Grotesk",sans-serif;
+    font-size:20px;
+    font-weight:700;
+}
+
+.profile-role{
+    margin-top:4px;
+    color:#555;
+    font-size:10px;
+}
+
+.profile-status{
+    margin-top:28px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    color:#777;
+    font-size:10px;
+}
+
+.profile-status i{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 0 10px #fff;
+}
+
+.discord-card{
+    min-height:207px;
+    padding:30px;
+}
+
+.discord-title{
+    color:#555;
+    font-size:10px;
+    margin-bottom:18px;
+}
+
+.discord-account{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:14px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.discord-account:last-child{
+    border-bottom:0;
+}
+
+.discord-account span:first-child{
+    color:#777;
+    font-size:11px;
+}
+
+.discord-account span:last-child{
+    color:#ddd;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:12px;
+}
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+.skills-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.skill{
+    min-height:290px;
+    padding:30px;
+
+    transition:
+        transform .45s cubic-bezier(.2,.8,.2,1),
+        border-color .35s;
+}
+
+.skill:hover{
+    transform:
+        translateY(-10px)
+        rotateX(4deg)
+        rotateY(-3deg);
+}
+
+.skill-index{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    color:#3d3d3d;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:10px;
+}
+
+.skill-icon{
+    width:55px;
+    height:55px;
+
+    margin-top:50px;
+    margin-bottom:24px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.1),
+            rgba(255,255,255,.015)
+        );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    font-family:"Space Grotesk",sans-serif;
+    font-weight:700;
+    font-size:12px;
+
+    box-shadow:
+        inset 0 1px rgba(255,255,255,.05),
+        0 15px 35px rgba(0,0,0,.3);
+}
+
+.skill h3{
+    font-size:18px;
+    margin-bottom:10px;
+}
+
+.skill p{
+    color:#555;
+    font-size:11px;
+    line-height:1.9;
+}
+
+/* =========================================================
+   PROJECTS
+========================================================= */
+
+.projects{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.project{
+    min-height:340px;
+    padding:35px;
+
+    transition:
+        transform .45s cubic-bezier(.2,.8,.2,1),
+        border-color .35s;
+}
+
+.project:hover{
+    transform:translateY(-9px);
+}
+
+.project-number{
+    font-family:"Space Grotesk",sans-serif;
+    color:#333;
+    font-size:11px;
+}
+
+.project-category{
+    display:inline-flex;
+    padding:7px 11px;
+
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:100px;
+
+    color:#666;
+    font-size:9px;
+
+    margin-top:30px;
+}
+
+.project h3{
+    margin-top:20px;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:34px;
+}
+
+.project p{
+    max-width:500px;
+    margin-top:12px;
+
+    color:#555;
+    font-size:12px;
+    line-height:2;
+}
+
+.project-line{
+    position:absolute;
+    right:35px;
+    bottom:35px;
+    left:35px;
+
+    height:1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.1),
+            transparent
+        );
+}
+
+.project-arrow{
+    position:absolute;
+    left:35px;
+    bottom:20px;
+
+    color:#444;
+    font-size:22px;
+
+    transition:.3s;
+}
+
+.project:hover .project-arrow{
+    color:#fff;
+    transform:translateX(-7px);
+}
+
+/* =========================================================
+   BIG STATEMENT
+========================================================= */
+
+.statement{
+    min-height:70vh;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+}
+
+.statement-inner{
+    width:min(900px,100%);
+}
+
+.statement-small{
+    color:#444;
+    font-family:"Space Grotesk",sans-serif;
+    font-size:10px;
+    letter-spacing:5px;
+    margin-bottom:30px;
+}
+
+.statement h2{
+    font-family:"Space Grotesk",sans-serif;
+    font-size:clamp(45px,8vw,100px);
+    line-height:.95;
+    letter-spacing:-5px;
+}
+
+.statement h2 span{
+    color:#444;
+}
+
+.statement p{
+    max-width:550px;
+    margin:28px auto 0;
+
+    color:#555;
+    font-size:12px;
+    line-height:2;
+}
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.contact-box{
+    position:relative;
+    min-height:430px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    padding:50px;
+
+    border-radius:35px;
+
+    border:1px solid rgba(255,255,255,.09);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,.065),
+            transparent 50%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.008)
+        );
+
+    box-shadow:
+        0 50px 120px rgba(0,0,0,.5),
+        inset 0 1px rgba(255,255,255,.04);
+
+    overflow:hidden;
+}
+
+.contact-box::before{
+    content:"";
+    position:absolute;
+    width:700px;
+    height:700px;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    border:1px solid rgba(255,255,255,.025);
+    border-radius:50%;
+
+    box-shadow:
+        0 0 0 80px rgba(255,255,255,.008),
+        0 0 0 160px rgba(255,255,255,.005);
+}
+
+.contact-content{
+    position:relative;
+    z-index:2;
+}
+
+.contact-label{
+    color:#555;
+    font-size:10px;
+    letter-spacing:4px;
+}
+
+.contact-box h2{
+    margin-top:22px;
+
+    font-family:"Space Grotesk",sans-serif;
+    font-size:clamp(50px,8vw,95px);
+    line-height:.9;
+    letter-spacing:-5px;
+}
+
+.contact-box p{
+    max-width:500px;
+    margin:25px auto 0;
+
+    color:#555;
+    font-size:12px;
+    line-height:2;
+}
+
+.contact-buttons{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:12px;
+
+    margin-top:32px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+    width:min(1180px,calc(100% - 32px));
+    margin:auto;
+
+    padding:35px 0 30px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    border-top:1px solid rgba(255,255,255,.06);
+
+    color:#3d3d3d;
+
+    font-family:"Space Grotesk",sans-serif;
+    font-size:10px;
+}
+
+.footer strong{
+    color:#777;
+}
+
+/* =========================================================
+   REVEAL
+========================================================= */
+
+.reveal{
+    opacity:0;
+    transform:translateY(45px);
+
+    transition:
+        opacity 1s ease,
+        transform 1s cubic-bezier(.2,.8,.2,1);
+}
+
+.reveal.visible{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:950px){
+
+    .nav-links{
+        display:none;
+    }
+
+    .about-layout{
+        grid-template-columns:1fr;
+    }
+
+    .skills-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .section-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+}
+
+@media(max-width:650px){
+
+    .cursor,
+    .cursor-ring{
+        display:none;
+    }
+
+    .nav{
+        top:12px;
+        height:62px;
+        border-radius:18px;
+    }
+
+    .nav-right{
+        display:none;
+    }
+
+    .hero{
+        padding-top:130px;
+    }
+
+    .hero-name{
+        font-size:24vw;
+        letter-spacing:-5px;
+    }
+
+    .hero-role{
+        font-size:9px;
+        letter-spacing:4px;
+    }
+
+    .hero-description{
+        font-size:11px;
+    }
+
+    .section{
+        padding:90px 0;
+    }
+
+    .section-title{
+        font-size:43px;
+    }
+
+    .skills-grid{
+        grid-template-columns:1fr;
+    }
+
+    .projects{
+        grid-template-columns:1fr;
+    }
+
+    .about-main{
+        min-height:450px;
+        padding:30px;
+    }
+
+    .about-main h3{
+        font-size:30px;
+    }
+
+    .about-bottom{
+        right:30px;
+        left:30px;
+    }
+
+    .project{
+        min-height:310px;
+    }
+
+    .statement{
+        min-height:55vh;
+    }
+
+    .statement h2{
+        font-size:48px;
+        letter-spacing:-3px;
+    }
+
+    .contact-box{
+        min-height:400px;
+        padding:30px 20px;
+    }
+
+    .contact-box h2{
+        font-size:55px;
+    }
+
+    .footer{
+        flex-direction:column;
+        gap:12px;
+        text-align:center;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     BACKGROUND
+========================================================= -->
+
+<div class="background">
+    <div class="ambient one"></div>
+    <div class="ambient two"></div>
+    <div class="ambient three"></div>
+</div>
+
+<canvas id="particles"></canvas>
+
+<div class="noise"></div>
+
+<!-- =========================================================
+     CURSOR
+========================================================= -->
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+
+
+<!-- =========================================================
+     NAV
+========================================================= -->
+
+<nav class="nav">
+
+    <a href="#" class="brand">
+
+        <div class="brand-mark">
+            K
+        </div>
+
+        <div class="brand-name">
+            KILL
+        </div>
+
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="#about">
+            ABOUT
+        </a>
+
+        <a href="#skills">
+            SKILLS
+        </a>
+
+        <a href="#projects">
+            PROJECTS
+        </a>
+
+        <a href="#contact">
+            CONTACT
+        </a>
+
+    </div>
+
+
+    <div class="nav-right">
+
+        <span class="live-dot"></span>
+
+        ONLINE
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<header class="hero">
+
+    <div class="hero-content" id="heroContent">
+
+        <div class="hero-top">
+
+            <span></span>
+
+            AVAILABLE FOR WORK
+
+        </div>
+
+
+        <h1 class="hero-name">
+            KILL
+        </h1>
+
+
+        <div class="hero-role">
+
+            <strong>WEB</strong>
+            &nbsp; / &nbsp;
+            <strong>DISCORD</strong>
+            &nbsp; DEVELOPER
+
+        </div>
+
+
+        <p class="hero-description">
+
+            أبرمج مواقع ويب وبوتات Discord بتصاميم
+            حديثة وتجارب تفاعلية مختلفة.
+            الفكرة تبدأ منك، والتنفيذ عليّ.
+
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <a href="#projects" class="button primary">
+                استكشف أعمالي
+                <span>↓</span>
+            </a>
+
+            <a href="#contact" class="button secondary">
+                تواصل معي
+                <span>↗</span>
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="scroll-indicator">
+
+        SCROLL
+
+        <div class="scroll-line"></div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     ABOUT
+========================================================= -->
+
+<section class="section reveal" id="about">
+
+    <div class="section-head">
+
+        <div>
+
+            <div class="section-label">
+                01 / ABOUT ME
+            </div>
+
+            <h2 class="section-title">
+                من أنا؟
+            </h2>
+
+        </div>
+
+
+        <p class="section-subtitle">
+
+            خلف اسم KILL يوجد شخص يحب بناء الأشياء
+            من الصفر وتحويل الأفكار إلى تجارب رقمية.
+
+        </p>
+
+    </div>
+
+
+    <div class="about-layout">
+
+
+        <div class="card about-main">
+
+            <div class="about-number">
+                01
+            </div>
+
+
+            <h3>
+                I BUILD.
+            </h3>
+
+
+            <p>
+
+                أنا <strong>KILL</strong>، مبرمج متخصص في
+                <strong>تطوير مواقع الويب</strong> و
+                <strong>Discord Bots</strong>.
+
+                أحب التصميم الداكن، التفاصيل الصغيرة،
+                الحركات التفاعلية، والأفكار التي تجعل
+                المشروع مختلفاً عن أي شيء عادي.
+
+            </p>
+
+
+            <br>
+
+
+            <p>
+
+                بالنسبة لي، البرمجة ليست مجرد كتابة كود.
+                هي طريقة لتحويل فكرة بسيطة إلى شيء
+                يمكن للناس استخدامه والتفاعل معه.
+
+            </p>
+
+
+            <div class="about-bottom">
+
+                <span>
+                    CURRENTLY FOCUSED ON
+                </span>
+
+                <strong>
+                    WEB + DISCORD
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="about-side">
+
+
+            <div class="card profile-card">
+
+                <div class="profile-top">
+
+                    <div class="profile-avatar">
+                        K
+                    </div>
+
+                    <div>
+
+                        <div class="profile-name">
+                            KILL
+                        </div>
+
+                        <div class="profile-role">
+                            Developer
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-status">
+
+                    <i></i>
+
+                    Building something new
+
+                </div>
+
+            </div>
+
+
+            <div class="card discord-card">
+
+                <div class="discord-title">
+                    DISCORD IDENTITIES
+                </div>
+
+
+                <div class="discord-account">
+
+                    <span>
+                        Main
+                    </span>
+
+                    <span>
+                        5jh6
+                    </span>
+
+                </div>
+
+
+                <div class="discord-account">
+
+                    <span>
+                        Second
+                    </span>
+
+                    <span>
+                        3bs.k
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SKILLS
+========================================================= -->
+
+<section class="section reveal" id="skills">
+
+    <div class="section-head">
+
+        <div>
+
+            <div class="section-label">
+                02 / EXPERTISE
+            </div>
+
+            <h2 class="section-title">
+                ماذا أبرمج؟
+            </h2>
+
+        </div>
+
+
+        <p class="section-subtitle">
+
+            أركز على بناء مشاريع نظيفة، سريعة،
+            حديثة، ومصممة حسب الفكرة.
+
+        </p>
+
+    </div>
+
+
+    <div class="skills-grid">
+
+
+        <div class="card skill">
+
+            <div class="skill-index">
+
+                <span>
+                    01
+                </span>
+
+                <span>
+                    WEB
+                </span>
+
+            </div>
+
+
+            <div class="skill-icon">
+                WEB
+            </div>
+
+
+            <h3>
+                Websites
+            </h3>
+
+
+            <p>
+
+                مواقع شخصية، متاجر، صفحات تعريفية
+                وتجارب ويب تفاعلية.
+
+            </p>
+
+        </div>
+
+
+        <div class="card skill">
+
+            <div class="skill-index">
+
+                <span>
+                    02
+                </span>
+
+                <span>
+                    DISCORD
+                </span>
+
+            </div>
+
+
+            <div class="skill-icon">
+                DS
+            </div>
+
+
+            <h3>
+                Discord Bots
+            </h3>
+
+
+            <p>
+
+                بوتات Discord وأنظمة مخصصة
+                للسيرفرات والمجتمعات.
+
+            </p>
+
+        </div>
+
+
+        <div class="card skill">
+
+            <div class="skill-index">
+
+                <span>
+                    03
+                </span>
+
+                <span>
+                    UI
+                </span>
+
+            </div>
+
+
+            <div class="skill-icon">
+                UI
+            </div>
+
+
+            <h3>
+                UI / UX
+            </h3>
+
+
+            <p>
+
+                واجهات داكنة، Glassmorphism،
+                Motion وتصاميم حديثة.
+
+            </p>
+
+        </div>
+
+
+        <div class="card skill">
+
+            <div class="skill-index">
+
+                <span>
+                    04
+                </span>
+
+                <span>
+                    3D
+                </span>
+
+            </div>
+
+
+            <div class="skill-icon">
+                3D
+            </div>
+
+
+            <h3>
+                Interactive
+            </h3>
+
+
+            <p>
+
+                تأثيرات 3D، Parallax،
+                Particles وحركات تفاعلية.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PROJECTS
+========================================================= -->
+
+<section class="section reveal" id="projects">
+
+    <div class="section-head">
+
+        <div>
+
+            <div class="section-label">
+                03 / PROJECTS
+            </div>
+
+            <h2 class="section-title">
+                ما أبنيه.
+            </h2>
+
+        </div>
+
+
+        <p class="section-subtitle">
+
+            بعض أنواع المشاريع التي أعمل عليها
+            وأحول أفكارها إلى واقع.
+
+        </p>
+
+    </div>
+
+
+    <div class="projects">
+
+
+        <div class="card project">
+
+            <div class="project-number">
+                PROJECT / 001
+            </div>
+
+
+            <div class="project-category">
+                DISCORD DEVELOPMENT
+            </div>
+
+
+            <h3>
+                Discord Bots
+            </h3>
+
+
+            <p>
+
+                أنظمة تذاكر، إدارة، ألعاب،
+                اقتصاد، متاجر، أدوات مخصصة
+                وكل ما يحتاجه السيرفر.
+
+            </p>
+
+
+            <div class="project-line"></div>
+
+            <div class="project-arrow">
+                ←
+            </div>
+
+        </div>
+
+
+        <div class="card project">
+
+            <div class="project-number">
+                PROJECT / 002
+            </div>
+
+
+            <div class="project-category">
+                WEB DEVELOPMENT
+            </div>
+
+
+            <h3>
+                Websites
+            </h3>
+
+
+            <p>
+
+                مواقع شخصية ومتاجر وصفحات
+                تعريفية بتصاميم مخصصة وتجارب
+                استخدام حديثة.
+
+            </p>
+
+
+            <div class="project-line"></div>
+
+            <div class="project-arrow">
+                ←
+            </div>
+
+        </div>
+
+
+        <div class="card project">
+
+            <div class="project-number">
+                PROJECT / 003
+            </div>
+
+
+            <div class="project-category">
+                CREATIVE
+            </div>
+
+
+            <h3>
+                3D Experiences
+            </h3>
+
+
+            <p>
+
+                مواقع فيها حركة وتفاعل وإضاءة
+                وعمق بصري بدل التصميم التقليدي.
+
+            </p>
+
+
+            <div class="project-line"></div>
+
+            <div class="project-arrow">
+                ←
+            </div>
+
+        </div>
+
+
+        <div class="card project">
+
+            <div class="project-number">
+                PROJECT / 004
+            </div>
+
+
+            <div class="project-category">
+                CUSTOM
+            </div>
+
+
+            <h3>
+                Your Idea.
+            </h3>
+
+
+            <p>
+
+                عندك فكرة مختلفة؟
+                أبنيها من الصفر بالطريقة
+                التي تناسبك.
+
+            </p>
+
+
+            <div class="project-line"></div>
+
+            <div class="project-arrow">
+                ←
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STATEMENT
+========================================================= -->
+
+<section class="section statement reveal">
+
+    <div class="statement-inner">
+
+        <div class="statement-small">
+            CODE IS ONLY THE BEGINNING
+        </div>
+
+
+        <h2>
+
+            فكرة.
+            <span>كود.</span>
+            نتيجة.
+
+        </h2>
+
+
+        <p>
+
+            ما أهدف له هو صناعة مشاريع لها شخصية،
+            وليس مجرد صفحات تعمل.
+
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CONTACT
+========================================================= -->
+
+<section class="section reveal" id="contact">
+
+    <div class="contact-box">
+
+        <div class="contact-content">
+
+            <div class="contact-label">
+                04 / CONTACT
+            </div>
+
+
+            <h2>
+                LET'S BUILD.
+            </h2>
+
+
+            <p>
+
+                إذا عندك فكرة لموقع أو Discord Bot،
+                تواصل معي على Discord.
+
+            </p>
+
+
+            <div class="contact-buttons">
+
+                <a
+                    href="https://discord.com/users/5jh6"
+                    target="_blank"
+                    class="button primary"
+                >
+                    Discord · 5jh6
+                    <span>↗</span>
+                </a>
+
+
+                <a
+                    href="https://discord.com/users/3bs.k"
+                    target="_blank"
+                    class="button secondary"
+                >
+                    Discord · 3bs.k
+                    <span>↗</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="footer">
+
+    <div>
+        © 2026 <strong>KILL</strong>
+    </div>
+
+    <div>
+        WEB / DISCORD DEVELOPER
+    </div>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   CURSOR
+========================================================= */
+
+const cursor = document.querySelector(".cursor");
+const ring = document.querySelector(".cursor-ring");
+
+let mouseX = 0;
+let mouseY = 0;
+
+let ringX = 0;
+let ringY = 0;
+
+document.addEventListener("mousemove", (e) => {
+
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    cursor.style.left = mouseX + "px";
+    cursor.style.top = mouseY + "px";
+
+});
+
+function animateCursor(){
+
+    ringX += (mouseX - ringX) * .15;
+    ringY += (mouseY - ringY) * .15;
+
+    ring.style.left = ringX + "px";
+    ring.style.top = ringY + "px";
+
+    requestAnimationFrame(animateCursor);
+}
+
+animateCursor();
+
+
+document.querySelectorAll(
+    "a, .card, .button"
+).forEach(element => {
+
+    element.addEventListener("mouseenter", () => {
+
+        cursor.classList.add("big");
+        ring.classList.add("big");
+
+    });
+
+    element.addEventListener("mouseleave", () => {
+
+        cursor.classList.remove("big");
+        ring.classList.remove("big");
+
+    });
+
+});
+
+
+/* =========================================================
+   HERO 3D
+========================================================= */
+
+const heroContent =
+    document.getElementById("heroContent");
+
+document.addEventListener("mousemove", (e) => {
+
+    if(window.innerWidth <= 800) return;
+
+    const x =
+        (e.clientX / window.innerWidth - .5);
+
+    const y =
+        (e.clientY / window.innerHeight - .5);
+
+    heroContent.style.transform =
+        `
+        perspective(1200px)
+        rotateY(${x * 5}deg)
+        rotateX(${y * -5}deg)
+        translateZ(10px)
+        `;
+
+});
+
+
+/* =========================================================
+   CARD 3D TILT
+========================================================= */
+
+document.querySelectorAll(".card").forEach(card => {
+
+    card.addEventListener("mousemove", (e) => {
+
+        if(window.innerWidth <= 800) return;
+
+        const rect =
+            card.getBoundingClientRect();
+
+        const x =
+            e.clientX - rect.left;
+
+        const y =
+            e.clientY - rect.top;
+
+        const centerX =
+            rect.width / 2;
+
+        const centerY =
+            rect.height / 2;
+
+        const rotateY =
+            ((x - centerX) / centerX) * 3;
+
+        const rotateX =
+            ((y - centerY) / centerY) * -3;
+
+        card.style.transform =
+            `
+            perspective(1000px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            translateY(-5px)
+            `;
+
+    });
+
+
+    card.addEventListener("mouseleave", () => {
+
+        card.style.transform = "";
+
+    });
+
+});
+
+
+/* =========================================================
+   SCROLL REVEAL
+========================================================= */
+
+const revealObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if(entry.isIntersecting){
+
+                    entry.target.classList.add(
+                        "visible"
+                    );
+
+                }
+
+            });
+
+        },
+        {
+            threshold:.12
+        }
+    );
+
+
+document.querySelectorAll(".reveal")
+.forEach(element => {
+
+    revealObserver.observe(element);
+
+});
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+const canvas =
+    document.getElementById("particles");
+
+const ctx =
+    canvas.getContext("2d");
+
+let particles = [];
+
+let particleMouse = {
+    x:null,
+    y:null
+};
+
+function resizeCanvas(){
+
+    canvas.width =
+        window.innerWidth *
+        devicePixelRatio;
+
+    canvas.height =
+        window.innerHeight *
+        devicePixelRatio;
+
+    canvas.style.width =
+        window.innerWidth + "px";
+
+    canvas.style.height =
+        window.innerHeight + "px";
+
+    ctx.scale(
+        devicePixelRatio,
+        devicePixelRatio
+    );
+
+}
+
+resizeCanvas();
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+
+document.addEventListener(
+    "mousemove",
+    e => {
+
+        particleMouse.x =
+            e.clientX;
+
+        particleMouse.y =
+            e.clientY;
+
+    }
+);
+
+
+class Particle{
+
+    constructor(){
+
+        this.x =
+            Math.random() *
+            window.innerWidth;
+
+        this.y =
+            Math.random() *
+            window.innerHeight;
+
+        this.size =
+            Math.random() * 1.4 + .2;
+
+        this.speedX =
+            (Math.random() - .5) * .25;
+
+        this.speedY =
+            (Math.random() - .5) * .25;
+
+        this.opacity =
+            Math.random() * .45 + .05;
+
+    }
+
+
+    update(){
+
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+
+        if(this.x < 0)
+            this.x = window.innerWidth;
+
+        if(this.x > window.innerWidth)
+            this.x = 0;
+
+        if(this.y < 0)
+            this.y = window.innerHeight;
+
+        if(this.y > window.innerHeight)
+            this.y = 0;
+
+
+        if(
+            particleMouse.x !== null &&
+            particleMouse.y !== null
+        ){
+
+            const dx =
+                this.x - particleMouse.x;
+
+            const dy =
+                this.y - particleMouse.y;
+
+            const distance =
+                Math.sqrt(
+                    dx * dx +
+                    dy * dy
+                );
+
+            if(distance < 100){
+
+                this.x +=
+                    dx / distance * .35;
+
+                this.y +=
+                    dy / distance * .35;
+
+            }
+
+        }
+
+    }
+
+
+    draw(){
+
+        ctx.beginPath();
+
+        ctx.arc(
+            this.x,
+            this.y,
+            this.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            `rgba(255,255,255,${this.opacity})`;
+
+        ctx.fill();
+
+    }
+
+}
+
+
+function createParticles(){
+
+    particles = [];
+
+    const amount =
+        window.innerWidth < 700
+        ? 90
+        : 180;
+
+    for(
+        let i = 0;
+        i < amount;
+        i++
+    ){
+
+        particles.push(
+            new Particle()
+        );
+
+    }
+
+}
+
+createParticles();
+
+
+function animateParticles(){
+
+    ctx.clearRect(
+        0,
+        0,
+        window.innerWidth,
+        window.innerHeight
+    );
+
+
+    particles.forEach(
+        particle => {
+
+            particle.update();
+            particle.draw();
+
+        }
+    );
+
+
+    requestAnimationFrame(
+        animateParticles
+    );
+
+}
+
+animateParticles();
+
+
+/* =========================================================
+   PARALLAX AMBIENT
+========================================================= */
+
+document.addEventListener("mousemove", e => {
+
+    const x =
+        (e.clientX / window.innerWidth - .5);
+
+    const y =
+        (e.clientY / window.innerHeight - .5);
+
+
+    const one =
+        document.querySelector(".ambient.one");
+
+    const two =
+        document.querySelector(".ambient.two");
+
+    const three =
+        document.querySelector(".ambient.three");
+
+
+    one.style.transform =
+        `translate(${x * 45}px,${y * 45}px)`;
+
+    two.style.transform =
+        `translate(${x * -65}px,${y * -65}px)`;
+
+    three.style.transform =
+        `translate(${x * 25}px,${y * -25}px)`;
+
+});
+
+
+/* =========================================================
+   BUTTON RIPPLE
+========================================================= */
+
+document.querySelectorAll(".button")
+.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        function(e){
+
+            const ripple =
+                document.createElement("span");
+
+            const rect =
+                this.getBoundingClientRect();
+
+            ripple.style.position =
+                "absolute";
+
+            ripple.style.width =
+                "10px";
+
+            ripple.style.height =
+                "10px";
+
+            ripple.style.borderRadius =
+                "50%";
+
+            ripple.style.background =
+                "rgba(255,255,255,.25)";
+
+            ripple.style.left =
+                (e.clientX - rect.left) + "px";
+
+            ripple.style.top =
+                (e.clientY - rect.top) + "px";
+
+            ripple.style.transform =
+                "translate(-50%,-50%) scale(0)";
+
+            ripple.style.animation =
+                "ripple .6s ease-out";
+
+            ripple.style.pointerEvents =
+                "none";
+
+            this.appendChild(ripple);
+
+            setTimeout(
+                () => ripple.remove(),
+                600
+            );
+
+        }
+    );
+
+});
+
+
+const rippleStyle =
+document.createElement("style");
+
+rippleStyle.innerHTML = `
+
+@keyframes ripple{
+
+    to{
+
+        transform:
+            translate(-50%,-50%)
+            scale(25);
+
+        opacity:0;
+
+    }
+
+}
+
+`;
+
+document.head.appendChild(rippleStyle);
+
+</script>
+
+</body>
+</html>
