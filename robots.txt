@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ramoamhdy44-ctrl.github.io/kill/sitemap.xml
